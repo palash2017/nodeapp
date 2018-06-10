@@ -1,0 +1,24 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.1",
+    "cookie-parser": "1.4.3",
+    "debug": "2.6.9",
+    "express": "4.16.3",
+    "express-layout": "^0.1.0",
+    "morgan": "1.7.0",
+    "mysql": "^2.15.0",
+    "pug": "^2.0.3"
+  },
+  "devDependencies": {
+    "mocha": "3.1.0"
+  }
+}

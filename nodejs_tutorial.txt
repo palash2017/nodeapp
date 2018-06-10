@@ -1,0 +1,219 @@
+https://medium.com/technoetics/handling-user-login-and-registration-using-nodejs-and-mysql-81b146e37419
+http://technoetics.in/author/admin/
+http://technoetics.in/tutorials/
+
+https://www.sitepoint.com/forms-file-uploads-security-node-express/
+
+mysql -u root -p
+mysql> show databases
+ -> ;
++--------------------+
+| Database |
++--------------------+
+| information_schema |
+| cloudprint |
+| mysql |
+| performance_schema |
+| sys |
++--------------------+
+mysql> use cloudprint
+Database changed
+
+
+CREATE TABLE `users` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `first_name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+ `last_name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+ `email` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+ `password` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+ `created` datetime NOT NULL,
+ `modified` datetime NOT NULL,
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+package.json:
+================
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.16.0",
+    "express": "^4.14.0",
+    "mysql": "^2.13.0"
+  }
+}
+
+server.js:
+==============
+var express    = require("express");
+var login = require('./routes/loginroutes');
+var bodyParser = require('body-parser');
+var app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+var router = express.Router();
+// test route
+router.get('/', function(req, res) {
+    res.json({ message: 'welcome to our upload module apis' });
+});
+//route to handle user registration
+router.post('/register',login.register);
+router.post('/login',login.login)
+app.use('/api', router);
+app.listen(5000);
+
+mysql connection:
+=======================
+var mysql      = require('mysql');
+var connection = mysql.createConnection({
+  host     : 'localhost',
+  user     : 'root',
+  password : 'your-password',
+  database : 'cloudprint'
+});
+connection.connect(function(err){
+if(!err) {
+    console.log("Database is connected ... nn");
+} else {
+    console.log("Error connecting database ... nn");
+}
+});
+
+user registration:
+==========================
+exports.register = function(req,res){
+  // console.log("req",req.body);
+  var today = new Date();
+  var users={
+    "first_name":req.body.first_name,
+    "last_name":req.body.last_name,
+    "email":req.body.email,
+    "password":req.body.password,
+    "created":today,
+    "modified":today
+  }
+  connection.query('INSERT INTO users SET ?',users, function (error, results, fields) {
+  if (error) {
+    console.log("error ocurred",error);
+    res.send({
+      "code":400,
+      "failed":"error ocurred"
+    })
+  }else{
+    console.log('The solution is: ', results);
+    res.send({
+      "code":200,
+      "success":"user registered sucessfully"
+        });
+  }
+  });
+}
+
+handler for user login and registration:
+=============================================
+exports.login = function(req,res){
+  var email= req.body.email;
+  var password = req.body.password;
+  connection.query('SELECT * FROM users WHERE email = ?',[email], function (error, results, fields) {
+  if (error) {
+    // console.log("error ocurred",error);
+    res.send({
+      "code":400,
+      "failed":"error ocurred"
+    })
+  }else{
+    // console.log('The solution is: ', results);
+    if(results.length >0){
+      if([0].password == password){
+        res.send({
+          "code":200,
+          "success":"login sucessfull"
+            });
+      }
+      else{
+        res.send({
+          "code":204,
+          "success":"Email and password does not match"
+            });
+      }
+    }
+    else{
+      res.send({
+        "code":204,
+        "success":"Email does not exits"
+          });
+    }
+  }
+  });
+}
+
+
+
+
+loginroutes.js:
+=================
+http://pac.intranet.genpact.com/BLR
+http://182.94.234.152:3120
+
+https://www.sitepoint.com/forms-file-uploads-security-node-express/
+
+
+
+npm config set proxy http://proxy_host:port
+
+D:\Users\703177409\Desktop\node\firstApp>npm config set proxy http://<ohr>:<password>@2018@182.94.234.152:3120
+D:\Users\703177409\Desktop\node\firstApp>npm config set https-proxy http://<ohr>:<password>@182.94.234.152:3120
+
+'2018-05-08 15:00:00'
+
+mysql> insert into users(first_name,last_name,email,password) values('palash','mukhopadhyay','palash@genpact.com','pass1234');
+
+//////////////////////////////////////
+<!-- views/contact.ejs -->
+<div class="form-header">
+  <% if (Object.keys(errors).length === 0) { %>
+    <h2>Send us a message</h2>
+  <% } else { %>
+    <h2 class="errors-heading">Oops, please correct the following:</h2>
+    <ul class="errors-list">
+      <% Object.values(errors).forEach(error => { %>
+        <li><%= error.msg %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+</div>
+
+<form method="post" action="/contact" novalidate>
+  <div class="form-field <%= errors.message ? 'form-field-invalid' : '' %>">
+    <label for="message">Message</label>
+    <textarea class="input" id="message" name="message" rows="4" autofocus><%= data.message %></textarea>
+    <% if (errors.message) { %>
+      <div class="error"><%= errors.message.msg %></div>
+    <% } %>
+  </div>
+  <div class="form-field <%= errors.email ? 'form-field-invalid' : '' %>">
+    <label for="email">Email</label>
+    <input class="input" id="email" name="email" type="email" value="<%= data.email %>" />
+    <% if (errors.email) { %>
+      <div class="error"><%= errors.email.msg %></div>
+    <% } %>
+  </div>
+  <div class="form-actions">
+    <button class="btn" type="submit">Send</button>
+  </div>
+</form>
+
+///////////////////////////////////////////////
+
